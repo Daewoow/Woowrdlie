@@ -1,12 +1,28 @@
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR;
+using Wordlie.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Logging.AddConsole();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR().AddHubOptions<GameHub>(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(380);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(380);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(380);
+    options.EnableDetailedErrors = true;
+    options.MaximumParallelInvocationsPerClient = Environment.ProcessorCount - 1;
+});
 
 var app = builder.Build();
+
+app.MapHub<GameHub>("/game", options => {
+    options.Transports = HttpTransportType.WebSockets;
+});
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -17,33 +33,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+app.MapGet("/mainpage", context =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    context.Response.Redirect("src/pages/login.html");
+    return Task.CompletedTask;
+});
+
+app.Run();

@@ -27,14 +27,20 @@ public class WordController : Controller
     }
     
     [HttpGet]
-    [Route("currentWord")]
-    public IActionResult GetCurrentWord() => GameState.CurrentWord is null 
-        ? NotFound() 
-        : Ok(string.Concat(GameState.CurrentWord.WordArray.Select(x => x.LetterValue)));
-    
+    [Route("currentWord/{gameId:guid}")]
+    public IActionResult GetCurrentWord(Guid gameId)
+    {
+        GlobalGame.State = State.Daily;
+        if (!GlobalGame.PartiesMap.TryGetValue(gameId, out var currentParty))
+            return BadRequest("Неверный Id игры");
+        return currentParty.CurrentWord is null
+            ? NotFound()
+            : Ok(string.Concat(currentParty.CurrentWord.WordArray.Select(x => x.LetterValue)));
+    }
+
     [HttpGet]
     [Route("dailyWord")]
-    public IActionResult GetDailyWord() => GameState.DailyWord is null 
+    public IActionResult GetDailyWord() => GlobalGame.DailyWord is null 
         ? NotFound() 
-        : Ok(string.Concat(GameState.DailyWord.WordArray.Select(x => x.LetterValue)));
+        : Ok(string.Concat(GlobalGame.DailyWord.WordArray.Select(x => x.LetterValue)));
 }

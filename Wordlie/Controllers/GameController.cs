@@ -10,31 +10,30 @@ public class GameController : Controller
     [Route("changeDailyWord")]
     public IActionResult ChangeDailyWord()
     {
-        var currentWord = GameState.DailyWord;
-        while (GameState.DailyWord == currentWord)
-            GameState.DailyWord = (Word)WordController.GetWord();
+        var currentWord = GlobalGame.DailyWord;
+        while (GlobalGame.DailyWord == currentWord)
+            GlobalGame.DailyWord = (Word)WordController.GetWord();
         return Ok();
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("startDaily")]
     public IActionResult StartDaily()
     {
-        GameState.State = State.Daily;
-        GameState.CurrentWord = GameState.DailyWord;
-        return Ok(GameState.DailyWord.ToString());
+        var newParty = new Party();
+        var gameId = newParty.GameId;
+        GlobalGame.PartiesMap[gameId] = newParty;
+        newParty.CurrentWord = GlobalGame.DailyWord;
+        return Ok(new
+        {
+            id = gameId,
+            word = newParty.CurrentWord.ToString()
+        });
     }
-
-    [HttpPost]
-    [Route("try/{value}")]
-    public IActionResult Try(string value)
-    {
-        if (value.Length != GameState.CurrentWord.WordArray.Count)
-            return BadRequest($"Количество букв в слове должно быть равно {GameState.CurrentWord.WordArray.Count}");
-        var (words, scs) = GameState.CheckWord(value);
-        if (!scs) 
-            return Ok(words);
-        GameState.State = State.Menu;
-        return Ok(words);
-    }
+    
+    // public IActionResult JoinDaily(Guid gameId)
+    
+    [HttpGet]
+    [Route("parties/all")]
+    public IActionResult AllParties() => Ok(GlobalGame.PartiesMap.Keys);
 }
