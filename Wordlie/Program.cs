@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Wordlie.Infrastructure;
+using Wordlie.Infrastructure.Database;
+using Wordlie.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,9 @@ builder.Logging.AddConsole();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<WordService>();
 builder.Services.AddSignalR().AddHubOptions<GameHub>(options =>
 {
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(380);

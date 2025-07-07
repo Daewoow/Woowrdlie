@@ -1,23 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wordlie.Infrastructure;
+using Wordlie.Services;
 
 namespace Wordlie.Controllers;
 
 [Route("words")]
-public class WordController : Controller
+public class WordController(WordService wordService) : Controller
 {
-    public static string GetWord()
-    {
-        var randomIndex = new Random().Next(0, WordsDictionary.Words.Count);
-        return WordsDictionary.Words[randomIndex];
-    }
-    
-    [HttpGet]
-    [Route("all")]
-    public IActionResult GetAllWords()
-    {
-        return Ok(WordsDictionary.Words);
-    }
+    private async Task<string> GetWord() => await wordService.GetRandomWordAsync();
 
     [HttpGet]
     [Route("random")]

@@ -1,18 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wordlie.Infrastructure;
+using Wordlie.Services;
 
 namespace Wordlie.Controllers;
 
 [Route("game")]
-public class GameController : Controller
+public class GameController(WordService wordService) : Controller
 {
+    private async Task<string> GetWord() => await wordService.GetRandomWordAsync();
+    
     [HttpGet]
     [Route("changeDailyWord")]
-    public IActionResult ChangeDailyWord()
+    public async Task<IActionResult> ChangeDailyWord()
     {
         var currentWord = GlobalGame.DailyWord;
+        var word = await GetWord();
         while (GlobalGame.DailyWord == currentWord)
-            GlobalGame.DailyWord = (Word)WordController.GetWord();
+            GlobalGame.DailyWord = (Word)word;
         return Ok();
     }
 
@@ -30,8 +34,6 @@ public class GameController : Controller
             word = newParty.CurrentWord.ToString()
         });
     }
-    
-    // public IActionResult JoinDaily(Guid gameId)
     
     [HttpGet]
     [Route("parties/all")]

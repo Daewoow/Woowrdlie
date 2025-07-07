@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Wordlie.Infrastructure;
+using Wordlie.Services;
 
 namespace Wordlie.Controllers;
 
 // gameId = groupName
 [Route("game/{gameId}")]
-public class PartyController(IHubContext<GameHub> hubContext) : Controller
+public class PartyController(IHubContext<GameHub> hubContext, WordService wordService) : Controller
 {
     [HttpPost]
     [Route("try/{value}")]
@@ -23,6 +24,10 @@ public class PartyController(IHubContext<GameHub> hubContext) : Controller
                 $"Количество букв в слове должно быть равно {currentParty.CurrentWord.WordArray.Count}");
             return BadRequest();
         }
+        
+        var isContains = await wordService.ContainsWordAsync(value);
+        if (!isContains)
+            return BadRequest("Ой, такого слова нет в словаре");
         
         var (words, scs) = GlobalGame.CheckWord(value, gameId);
         if (!scs)
