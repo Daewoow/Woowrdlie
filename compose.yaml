@@ -4,6 +4,10 @@ services:
   postgres:
     container_name: pg_cont_wordlie
     image: postgres:17.2
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: postgres-setup
     environment:
       POSTGRES_DB: WordlieDB
       POSTGRES_USER: postgres
