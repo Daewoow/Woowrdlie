@@ -31,7 +31,7 @@ jobs:
           
       - name: Initialize database
         run: |
-          docker-compose exec -T postgres bash -c \
+          docker compose exec -T postgres bash -c \
           "until pg_isready -U postgres -d WordlieDB; do sleep 2; done"
           
           docker compose exec -T postgres bash -c \
