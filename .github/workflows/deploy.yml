@@ -33,5 +33,8 @@ jobs:
         run: |
           docker-compose exec -T postgres bash -c \
           "until pg_isready -U postgres -d WordlieDB; do sleep 2; done"
-
-          docker-compose exec -T postgres python3 /docker-entrypoint-initdb.d/fill_db.py
+          
+          docker compose exec -T postgres bash -c \
+          "python3 -m venv /tmp/venv && /tmp/venv/bin/pip install psycopg2-binary"
+    
+          docker compose exec -T postgres /tmp/venv/bin/python /docker-entrypoint-initdb.d/fill_db.py
