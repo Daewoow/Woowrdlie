@@ -1,0 +1,62 @@
+﻿version: '3.8'
+
+services:
+  postgres:
+    container_name: pg_cont_wordlie
+    image: postgres:17.2
+    environment:
+      POSTGRES_DB: WordlieDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ifconfigroute-n
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INITDB_ARGS: --locale-provider=icu --icu-locale=ru-RU
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./fill_db.py:/docker-entrypoint-initdb.d/fill_db.py
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d WordlieDB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin_cont_wordlie
+    image: dpage/pgadmin4:8.13
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: ifconfigroute-n
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    networks:
+      - postgres
+
+  wordlie:
+    container_name: wordlie_app
+    build: .
+    volumes:
+      - ./Wordlie/wwwroot:/app/wwwroot
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_CONNECTION_STRING: Host=postgres;Database=WordlieDB;Username=postgres;Password=ifconfigroute-n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "7249:7249"
+    networks:
+      - postgres
+
+volumes:
+  postgres_data:
+  pgadmin-data:
+
+networks:
+  postgres:
+    driver: bridge

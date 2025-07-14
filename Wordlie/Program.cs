@@ -49,4 +49,6 @@ app.MapGet("/mainpage", context =>
     return Task.CompletedTask;
 });
 
+app.MapGet("/", () => Results.Redirect("/mainpage"));
+
 app.Run();
