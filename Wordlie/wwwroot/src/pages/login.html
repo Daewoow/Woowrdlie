@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Вход</title>
+</head>
+<body>
+<input type="text" id="userName" placeholder="Ваше имя">
+<button id="loginBtn">Войти</button>
+<script>
+    document.getElementById("loginBtn").addEventListener("click", function() {
+        const userName = document.getElementById("userName").value;
+        if (!userName) 
+            return alert("Введите имя!");
+        sessionStorage.setItem("userName", userName);
+        window.location.href = "index.html";
+    });
+</script>
+</body>
+</html>

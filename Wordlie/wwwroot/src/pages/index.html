@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная</title>
+</head>
+<body>
+    <h1>Добро пожаловать, <span id="displayName"></span>!</h1>
+    <button id="sendBtn">Слово дня</button>
+    <h3>Подсказка: вы можете присоединиться к существующей игре, если организатор дал вам её id</h3>
+    <input type="text" id="gameId" placeholder="Введите id существующей игры">
+    <button id="connectBtn">Подключиться</button>
+</body>
+<script>
+    const userName = sessionStorage.getItem("userName");
+    document.getElementById("displayName").textContent = userName;
+    
+    document.getElementById("connectBtn").addEventListener("click", async function() {
+        try {
+            const gameId = document.getElementById("gameId").value;
+            if (!gameId)
+                return alert("Введите id игры!");
+            window.location.href = `game.html?gameId=${gameId}`;
+        }
+        catch (error) {
+            console.error("Ошибка:", error.message);
+            alert("Не удалось присоединиться к игре. Попробуйте ещё раз.");
+        }
+    })
+    
+    document.getElementById("sendBtn").addEventListener("click", async function() {
+        try {
+            const changeResponse = await fetch("/game/changeDailyWord");
+            if (!changeResponse.ok) 
+                console.log(new Error("Ошибка при смене слова"));
+
+            const startResponse = await fetch("/game/startDaily");
+            if (!startResponse.ok) 
+                console.log(new Error("Ошибка при создании игры"));
+
+            const gameData = await startResponse.json();
+            console.log("ID игры:", gameData.id, "Слово:", gameData.word);
+
+            window.location.href = `game.html?gameId=${gameData.id}`;
+        } catch (error) {
+            console.error("Ошибка:", error.message);
+            alert("Не удалось начать игру. Попробуйте ещё раз.");
+        }
+    });
+</script>
+</html>
