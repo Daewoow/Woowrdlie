@@ -1,0 +1,53 @@
+﻿* {
+    /*font: bold 40px "Libre Franklin", sans-serif;*/
+    color: #fff;
+    background-color: #000;
+    /*border: 1px solid red;*/
+    box-sizing: border-box;
+}
+
+body{
+    color: #fff;
+    background-color: #000;
+}
+
+.container{
+    display: flex;
+    /*flex-direction: column;*/
+}
+
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    max-width: 30vw ;
+}
+#chatroom {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+}
+.message {
+    max-width: 70%;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    word-wrap: break-word;
+    border: 1px solid #ccc;
+}
+.word-input {
+    margin-top: 20px;
+}
