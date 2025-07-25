@@ -16,7 +16,7 @@ public static class GlobalGame
             return ("Bad Id", false);
 
         var resultWordArray = new Letter[word.Length];
-        var currentWordToString = string.Concat(currentParty.CurrentWord.WordArray.Select(x => x.LetterValue));
+        var currentWordToString = string.Concat(currentParty.CurrentWord.LetterArray.Select(x => x.LetterValue));
         for (var i = 0; i < word.Length; i++)
         {
             var currentLetter = word[i];
