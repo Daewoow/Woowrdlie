@@ -18,10 +18,10 @@ public class PartyController(IHubContext<GameHub> hubContext, WordService wordSe
         
         var groupName = gameId.ToString();
         
-        if (value.Length != currentParty.CurrentWord.WordArray.Count)
+        if (value.Length != currentParty.CurrentWord.LetterArray.Count)
         {
             await hubContext.Clients.Group(groupName).SendAsync("BadWord", 
-                $"Количество букв в слове должно быть равно {currentParty.CurrentWord.WordArray.Count}");
+                $"Количество букв в слове должно быть равно {currentParty.CurrentWord.LetterArray.Count}");
             return BadRequest();
         }
         
