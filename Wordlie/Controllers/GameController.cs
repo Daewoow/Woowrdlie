@@ -13,10 +13,10 @@ public class GameController(WordService wordService) : Controller
     [Route("changeDailyWord")]
     public async Task<IActionResult> ChangeDailyWord()
     {
-        var currentWord = GlobalGame.DailyWord;
-        var word = await GetWord();
-        while (GlobalGame.DailyWord == currentWord)
-            GlobalGame.DailyWord = (Word)word;
+        // var currentWord = GlobalGame.DailyWord;
+        // var word = await GetWord();
+        // while (GlobalGame.DailyWord == currentWord)
+        //     GlobalGame.DailyWord = (Word)word;
         return Ok();
     }
 

@@ -27,12 +27,12 @@ public class WordController(WordService wordService) : Controller
             return BadRequest("Неверный Id игры");
         return currentParty.CurrentWord is null 
             ? NotFound() 
-            : Ok(currentParty.CurrentWord.GetJson());
+            : Ok(currentParty.CurrentWord.LetterArray);
     }
 
     [HttpGet]
     [Route("dailyWord")]
     public IActionResult GetDailyWord() => GlobalGame.DailyWord is null 
         ? NotFound() 
-        : Ok(GlobalGame.DailyWord.GetJson());
+        : Ok(GlobalGame.DailyWord.LetterArray);
 }

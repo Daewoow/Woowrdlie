@@ -7,6 +7,7 @@ public class Party
     public Word CurrentWord { get; set; } = GlobalGame.DailyWord;
     public readonly List<Player> Players = new ();
     public List<string> Attempts { get; } = [];
+    public List<Word> AttemptWords { get; set; } = [];
 
     public Party()
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Wordlie.Infrastructure;
 using Wordlie.Services;
@@ -24,8 +25,12 @@ public class PartyController(IHubContext<GameHub> hubContext, WordService wordSe
                 $"Количество букв в слове должно быть равно {currentParty.CurrentWord.LetterArray.Count}");
             return BadRequest();
         }
-        
         var isContains = await wordService.ContainsWordAsync(value);
+        
+        #if DEBUG
+        isContains = true;
+        #endif
+        
         if (!isContains)
             return BadRequest("Ой, такого слова нет в словаре");
         
@@ -47,8 +52,24 @@ public class PartyController(IHubContext<GameHub> hubContext, WordService wordSe
         if (!GlobalGame.PartiesMap.TryGetValue(gameId, out var currentParty))
             return BadRequest("Неверный Id игры");
         var groupName = gameId.ToString();
+        // Получается, когда один попытки запросил, мы их всем рассылаем?
         await hubContext.Clients.Group(groupName).SendAsync("ReceiveAttempts", string.Join("\n", currentParty.Attempts));
         return Ok();
+    }
+    
+    [HttpGet]
+    [Route("attemptsJson")]
+    public async Task<IActionResult> ReceiveAttemptsJsonAsync(Guid gameId)
+    {
+        if (!GlobalGame.PartiesMap.TryGetValue(gameId, out var currentParty))
+            return BadRequest("Неверный Id игры");
+        var groupName = gameId.ToString();
+        await hubContext.Clients.Group(groupName).SendAsync("ReceiveAttempts", string.Join("\n", currentParty.Attempts));
+        return Ok(new
+        {
+            Words = currentParty.AttemptWords.Select(w => w.LetterArray), 
+            WordLength = currentParty.CurrentWord.WordString.Length,
+        });
     }
     
 }

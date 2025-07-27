@@ -16,7 +16,7 @@ public static class GlobalGame
             return ("Bad Id", false);
 
         var resultWordArray = new Letter[word.Length];
-        var currentWordToString = string.Concat(currentParty.CurrentWord.LetterArray.Select(x => x.LetterValue));
+        var currentWordToString = string.Concat(currentParty.CurrentWord.LetterArray.Select(x => x.Value));
         for (var i = 0; i < word.Length; i++)
         {
             var currentLetter = word[i];
@@ -40,6 +40,10 @@ public static class GlobalGame
         var resultWord = new Word(resultWordArray).ToString();
         var success = resultWord == currentParty.CurrentWord.WordString;
         currentParty.Attempts.Add(resultWord);
+
+        var guess = new Word(word);
+        var guessAttempt = Word.GetDifference(guess, currentParty.CurrentWord);
+        currentParty.AttemptWords.Add(guessAttempt);
 
         if (!success)
         {
